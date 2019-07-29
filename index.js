@@ -11,9 +11,7 @@ app.use(cors())
 dotenv.config()
 mongoose
   .connect(
-    `mongodb+srv://${process.env.MONGO_ATLAS_USER}:${
-      process.env.MONGO_ATLAS_PASSWORD
-    }@cluster0-la7i4.mongodb.net/test?retryWrites=true&w=majority`
+    `mongodb+srv://recyco:recycoadmin1234@cluster0-la7i4.mongodb.net/test?retryWrites=true&w=majority`
   )
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.log(err))
