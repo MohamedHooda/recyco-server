@@ -115,6 +115,9 @@ const update = async (req, res) => {
 const leaderboard = async (req, res) => {
   const allUsers = await User.find()
   allUsers.sort((a, b) => a.points < b.points)
+  allUsers.sort(function(a, b) {
+    return b.points - a.points
+  })
   return res.send({ data: allUsers })
 }
 const _delete = async (req, res) => {
