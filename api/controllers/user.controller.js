@@ -41,19 +41,19 @@ const register = async (req, res) => {
   }
   const salt = bcrypt.genSaltSync(10)
   const hashed_pass = bcrypt.hashSync(password, salt)
-  await cloudinary.uploader.upload(photo, (error, result) => {
-    if (error) {
-      return res.status(500).json({ error: error })
-    } else {
-      profilepic = result.url
-    }
-  })
+  // await cloudinary.uploader.upload(photo, (error, result) => {
+  //   if (error) {
+  //     return res.status(500).json({ error: error })
+  //   } else {
+  //     profilepic = result.url
+  //   }
+  // })
   const newUser = new User({
     user_type: ['N'],
     username,
     name,
     email,
-    photo: profilepic,
+    photo,
     password: hashed_pass,
     date_of_birth,
     phone,
@@ -97,46 +97,20 @@ const login = async (req, res) => {
   })
 }
 const update = async (req, res) => {
-  if (!req.body.photo) {
-    await User.findByIdAndUpdate(
-      req.body.id,
-      req.body,
-      { new: true },
-      (err, model) => {
-        if (!err) {
-          return res.json({ data: model })
-        } else {
-          return res.json({
-            error: `Error, couldn't update a user given the following data`
-          })
-        }
-      }
-    )
-  } else {
-    var profilepic = ''
-    await cloudinary.uploader.upload(req.body.photo, (error, result) => {
-      if (error) {
-        return res.status(500).json({ error: error })
+  await User.findByIdAndUpdate(
+    req.body.id,
+    req.body,
+    { new: true },
+    (err, model) => {
+      if (!err) {
+        return res.json({ data: model })
       } else {
-        profilepic = result.url
+        return res.json({
+          error: `Error, couldn't update a user given the following data`
+        })
       }
-    })
-    req.body.photo = profilepic
-    await User.findByIdAndUpdate(
-      req.body.id,
-      req.body,
-      { new: true },
-      (err, model) => {
-        if (!err) {
-          return res.json({ data: model })
-        } else {
-          return res.json({
-            error: `Error, couldn't update a user given the following data`
-          })
-        }
-      }
-    )
-  }
+    }
+  )
 }
 const leaderboard = async (req, res) => {
   const allUsers = await User.find()
