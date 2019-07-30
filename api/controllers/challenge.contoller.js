@@ -72,11 +72,29 @@ const view_my_challenges = async (req, res) => {
   return res.send({ data: allChallengesAfter })
 }
 const claim = async (req, res) => {
-  const { points } = req.body
+  const { id } = req.body
+  const challenge = await Challenge.findById(id)
+  const points = challenge.points
   const user = await User.findById(req.data.id)
+  const myChallenges = user.challenges
+  const newchal = await Challenge.findByIdAndUpdate(
+    id,
+    { status: 'C' },
+    { new: true }
+  )
+  console.log(newchal)
+  var newChallenges = [newchal]
+  for (var i = 0; i < myChallenges.length; i++) {
+    console.log(myChallenges[i]._id.toString() === id.toString())
+    if (!(myChallenges[i]._id.toString() === id.toString())) {
+      newChallenges.push(myChallenges[i])
+    }
+  }
   const myPoints = user.points
+
   const user1 = await User.findByIdAndUpdate(req.data.id, {
-    points: myPoints + points
+    points: myPoints + points,
+    challenges: newChallenges
   })
   return res.send({ data: user1 })
 }
