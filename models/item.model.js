@@ -5,6 +5,9 @@ const itemSchema = new Schema({
   name: {
     type: String
   },
+  unit: {
+    type: String
+  },
   points: {
     type: Number
   }

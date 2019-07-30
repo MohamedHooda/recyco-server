@@ -6,6 +6,10 @@ const pickupSchema = new Schema({
     type: String,
     required: true
   },
+  unit: {
+    type: String,
+    required: true
+  },
   amount: {
     type: Number,
     required: true

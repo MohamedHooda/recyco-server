@@ -1,9 +1,10 @@
 const Item = require('../../models/item.model')
 const create = async (req, res) => {
-  const { name, points } = req.body
+  const { name, points, unit } = req.body
   const nweItem = await new Item({
     name,
-    points
+    points,
+    unit
   }).save()
   return res.send({ data: nweItem })
 }

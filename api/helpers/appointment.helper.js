@@ -8,7 +8,10 @@ const calculate_points = async req => {
   const user = await User.findById(user_id)
   var total_points = 0
   for (var i = 0; i < appointment.pickup.length; i++) {
-    const item = await Item.find({ name: appointment.pickup[i].item })
+    const item = await Item.find({
+      name: appointment.pickup[i].item,
+      unit: appointment.pickup[i].unit
+    })
     if (!item) break
     total_points += item[0].points * appointment.pickup[i].amount
   }
