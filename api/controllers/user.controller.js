@@ -3,6 +3,13 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const tokenKey = require('../../config/keys/keys').secret
 const store = require('store')
+const cloudinary = require('cloudinary').v2
+
+cloudinary.config({
+  cloud_name: 'mohamedhooda',
+  api_key: 653285149318386,
+  api_secret: 'UOuzryB3T1UpbNWMXV4DfNAfi9U'
+})
 
 const view_all_admin = async (req, res) => {
   const allUsers = await User.find()
@@ -21,8 +28,8 @@ const register = async (req, res) => {
     gender,
     phone,
     address,
-    password
-    // photo,
+    password,
+    photo
   } = req.body
   var profilepic = ''
   const useremail = await User.findOne({ email })
@@ -34,19 +41,19 @@ const register = async (req, res) => {
   }
   const salt = bcrypt.genSaltSync(10)
   const hashed_pass = bcrypt.hashSync(password, salt)
-  //   await cloudinary.uploader.upload(photo, (error, result) => {
-  //     if (error) {
-  //       return res.status(500).json({ error: error })
-  //     } else {
-  //       profilepic = result.url
-  //     }
-  //   })
+  await cloudinary.uploader.upload(photo, (error, result) => {
+    if (error) {
+      return res.status(500).json({ error: error })
+    } else {
+      profilepic = result.url
+    }
+  })
   const newUser = new User({
     user_type: ['N'],
     username,
     name,
     email,
-    photo: 'cloudinary',
+    photo: profilepic,
     password: hashed_pass,
     date_of_birth,
     phone,
@@ -90,20 +97,46 @@ const login = async (req, res) => {
   })
 }
 const update = async (req, res) => {
-  await User.findByIdAndUpdate(
-    req.body.id,
-    req.body,
-    { new: true },
-    (err, model) => {
-      if (!err) {
-        return res.json({ data: model })
-      } else {
-        return res.json({
-          error: `Error, couldn't update a user given the following data`
-        })
+  if (!req.body.photo) {
+    await User.findByIdAndUpdate(
+      req.body.id,
+      req.body,
+      { new: true },
+      (err, model) => {
+        if (!err) {
+          return res.json({ data: model })
+        } else {
+          return res.json({
+            error: `Error, couldn't update a user given the following data`
+          })
+        }
       }
-    }
-  )
+    )
+  } else {
+    var profilepic = ''
+    await cloudinary.uploader.upload(req.body.photo, (error, result) => {
+      if (error) {
+        return res.status(500).json({ error: error })
+      } else {
+        profilepic = result.url
+      }
+    })
+    req.body.photo = profilepic
+    await User.findByIdAndUpdate(
+      req.body.id,
+      req.body,
+      { new: true },
+      (err, model) => {
+        if (!err) {
+          return res.json({ data: model })
+        } else {
+          return res.json({
+            error: `Error, couldn't update a user given the following data`
+          })
+        }
+      }
+    )
+  }
 }
 const leaderboard = async (req, res) => {
   const allUsers = await User.find()
