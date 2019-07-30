@@ -14,7 +14,10 @@ const challenge_accepted = async (challenge, appointments) => {
       const user = await User.findById(appointments[0].user_id)
       const challenges = user.challenges
       for (var i = 0; i < challenges.length; i++) {
-        if (challenge._id.toString() === challenges[i]._id.toString()) {
+        if (
+          challenge._id.toString() === challenges[i]._id.toString() &&
+          challenge.status !== 'C'
+        ) {
           challenges[i].status = 'TBC'
         }
       }
