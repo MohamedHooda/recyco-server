@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const tokenKey = require('../../config/keys/keys').secret
 const store = require('store')
 const cloudinary = require('cloudinary').v2
+const Challenge = require('../../models/challenge.model')
 
 cloudinary.config({
   cloud_name: 'mohamedhooda',
@@ -66,6 +67,21 @@ const register = async (req, res) => {
     .save()
     .then(user => res.json({ data: user }))
     .catch(err => res.json({ error: err.message }))
+  const challenges = await Challenge.find()
+  await User.findByIdAndUpdate(
+    req.body.id,
+    challenges,
+    { new: true },
+    (err, model) => {
+      if (!err) {
+        return res.json({ data: model })
+      } else {
+        return res.json({
+          error: `Error, couldn't update a user given the following data`
+        })
+      }
+    }
+  )
 }
 const login = async (req, res) => {
   User.findOne({ email: req.body.email }, function(err, user) {
