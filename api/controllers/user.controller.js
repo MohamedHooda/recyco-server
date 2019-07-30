@@ -69,7 +69,7 @@ const register = async (req, res) => {
     .catch(err => res.json({ error: err.message }))
   const challenges = await Challenge.find()
   await User.findByIdAndUpdate(
-    req.body.id,
+    newUser._id,
     challenges,
     { new: true },
     (err, model) => {
