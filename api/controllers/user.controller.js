@@ -63,14 +63,14 @@ const register = async (req, res) => {
     appointments: [],
     challenges: []
   })
-  newUser
+  const user = newUser
     .save()
     .then(user => res.json({ data: user }))
     .catch(err => res.json({ error: err.message }))
   const challenges = await Challenge.find()
   await User.findByIdAndUpdate(
-    newUser._id,
-    challenges,
+    user._id,
+    { challenges },
     { new: true },
     (err, model) => {
       if (!err) {
